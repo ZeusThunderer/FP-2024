@@ -1,0 +1,61 @@
+name: Clojure CI
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Clojure CLI
+        uses: DeLaGuardo/setup-clojure@12.5
+        with:
+          clj-kondo: latest
+          cljfmt: latest
+
+      - name: Install Leiningen
+        run: |
+          curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
+          chmod +x lein
+          sudo mv lein /usr/local/bin/
+          
+      - name: Check format
+        run: cljfmt fix
+
+      - name: Lint lab1 - problem5
+        run: |
+              cd lab1/problem5 
+              clj-kondo --lint .
+
+      - name: Lint lab1 - problem26
+        run: |
+              cd lab1/problem26
+              clj-kondo --lint .
+              
+      - name: Test lab1 - problem5
+        run: |
+              cd lab1/problem5 
+              lein test 
+              
+      - name: Test lab1 - problem26
+        run: |
+              cd lab1/problem26 
+              lein test 
+
+      - name: Lint lab2
+        run: |
+              cd lab2/rb-tree
+              clj-kondo --lint . --config .clj-kondo/config.edn
+              
+      - name: Test lab2 - rb-tree
+        run: |
+              cd lab2/rb-tree 
+              lein test
+
+      - name: Lint lab3
+        run: |
+              cd lab3/interpolation
+              clj-kondo --lint . 
